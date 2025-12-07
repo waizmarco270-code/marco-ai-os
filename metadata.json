@@ -1,0 +1,8 @@
+{
+  "name": "MARCO — Holographic AI",
+  "description": "A futuristic, holographic AI assistant PWA featuring real-time chat, productivity tools, and a modular sci-fi interface.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ]
+}
