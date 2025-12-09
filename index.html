@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>MARCO — Holographic AI</title>
     
     <!-- PWA Setup -->
@@ -17,13 +17,17 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
       
-      body {
+      html, body {
         background-color: #000;
         color: #fff;
         font-family: 'Rajdhani', sans-serif;
         overflow: hidden;
         overscroll-behavior: none;
         -webkit-tap-highlight-color: transparent;
+        height: 100dvh; /* Dynamic Viewport Height for mobile browsers */
+        width: 100vw;
+        margin: 0;
+        padding: 0;
       }
       
       h1, h2, h3, h4, h5, h6, .hud-font {
@@ -92,13 +96,17 @@
 </script>
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root" style="height: 100%; width: 100%;"></div>
     <script type="module" src="./index.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('MARCO Service Worker Registered'))
+            .then(reg => {
+               console.log('MARCO Service Worker Registered');
+               // Force update if available
+               reg.update();
+            })
             .catch(err => console.log('SW Registration Failed:', err));
         });
       }

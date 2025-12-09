@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'marco-os-v3.4-hotfix';
+const CACHE_NAME = 'marco-os-v4.1-stable';
 const URLS_TO_CACHE = [
   './',
   './index.html',
@@ -35,31 +35,49 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // NAVIGATION REQUESTS (HTML): Network First, Fallback to Cache
+  // This ensures the user gets the latest deployment if online, fixing the 404 issue.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+           // Ensure we got a valid response before caching
+           if (!response || response.status !== 200 || response.type !== 'basic') {
+               return response;
+           }
+           const responseToCache = response.clone();
+           caches.open(CACHE_NAME).then((cache) => {
+               cache.put(event.request, responseToCache);
+           });
+           return response;
+        })
+        .catch(() => {
+           return caches.match('./index.html') || caches.match('/');
+        })
+    );
+    return;
+  }
+
+  // ASSET REQUESTS: Stale-While-Revalidate
+  // Serve from cache immediately, but update in background
   event.respondWith(
     caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(
-          (response) => {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+      .then((cachedResponse) => {
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+            if(networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseToCache);
+                });
             }
+            return networkResponse;
+        }).catch(() => {
+            // Network failed, nothing to do, we hopefully returned cachedResponse
+        });
 
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
+        return cachedResponse || fetchPromise;
       })
   );
 });

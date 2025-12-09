@@ -21,7 +21,7 @@ import LicenseGate from './components/LicenseGate';
 import SetupWizard from './components/SetupWizard';
 import AdminKeyGen from './components/AdminKeyGen';
 import Hologram from './components/Hologram';
-import InstallPrompt from './components/InstallPrompt'; // NEW IMPORT
+import InstallPrompt from './components/InstallPrompt'; 
 
 const DEFAULT_PROFILE: MasterProfile = {
     isRegistered: false,
@@ -705,18 +705,18 @@ const App: React.FC = () => {
   // 1. Check License
   if (!isLicensed) {
       return (
-          <>
+          <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center bg-black pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
             <ParticleBackground theme={currentTheme} />
             <LicenseGate theme={currentTheme} onSuccess={handleLicenseSuccess} />
             <InstallPrompt theme={currentTheme} />
-          </>
+          </div>
       );
   }
 
   // 2. Check Setup
   if (!isSetupComplete) {
       return (
-          <>
+          <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center bg-black pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
             <ParticleBackground theme={currentTheme} />
             <SetupWizard 
                 theme={currentTheme} 
@@ -724,35 +724,37 @@ const App: React.FC = () => {
                 onComplete={handleSetupComplete} 
             />
             <InstallPrompt theme={currentTheme} />
-          </>
+          </div>
       );
   }
 
   // 3. Security Check
   if (!isAuthenticated) {
      return (
-        <>
+        <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center bg-black pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
             <SecurityGate theme={currentTheme} masterProfile={state.masterProfile} onAuthenticate={handleAuthentication} />
             <InstallPrompt theme={currentTheme} />
-        </>
+        </div>
      );
   }
 
   // 4. Main App
   return (
-    <div className={`relative h-screen w-screen overflow-hidden flex flex-col md:flex-row font-sans perspective-1000`}>
+    <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col md:flex-row font-sans perspective-1000 bg-black`}>
       <InstallPrompt theme={currentTheme} />
       <ParticleBackground theme={currentTheme} />
       <SystemOverlay type={state.activeOverlay} theme={currentTheme} onClose={handleAlarmClose} />
-      <nav className={`hidden md:flex flex-col w-20 bg-black/80 border-r border-gray-800 backdrop-blur-xl z-50`}>
+      <nav className={`hidden md:flex flex-col w-20 bg-black/80 border-r border-gray-800 backdrop-blur-xl z-50 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
         <div className="p-4 flex justify-center mb-6"><div className={`w-10 h-10 rounded-full bg-${currentTheme.primary}/20 border border-${currentTheme.primary} flex items-center justify-center animate-pulse-glow`}><div className={`w-4 h-4 rounded-full bg-${currentTheme.primary}`}></div></div></div>
         <div className="flex-1 flex flex-col items-center gap-6">{NAV_ITEMS.map(item => (<button key={item.label} onClick={() => changeView(item.view)} className={`group relative p-3 rounded-xl transition-all duration-300 ${state.view === item.view ? `bg-${currentTheme.primary}/20 text-${currentTheme.primary} shadow-[0_0_15px_rgba(0,0,0,0.5)]` : 'text-gray-500 hover:text-white hover:bg-white/5'}`} title={item.label}>{item.icon}<span className={`absolute left-full ml-4 px-2 py-1 bg-black border border-${currentTheme.border} text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50`}>{item.label}</span>{state.view === item.view && <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-${currentTheme.primary} rounded-r`}></div>}</button>))}</div>
         <div className="p-4 flex flex-col items-center text-[10px] text-gray-600 font-mono"><div>v3.3</div><div>SYS</div></div>
       </nav>
       <main className={`flex-1 relative flex flex-col min-h-0 z-10 transition-transform duration-500 ease-out origin-center ${state.is3DMode ? 'transform scale-[0.95] rotate-x-2' : ''}`} style={state.is3DMode ? { transform: 'perspective(1500px) rotateX(2deg) scale(0.95)', boxShadow: `0 0 100px ${currentTheme.bg === 'black' ? '#000' : 'rgba(0,0,0,0.5)'} inset` } : {}}>
         <div className={`flex-none h-1 bg-gradient-to-r from-transparent via-${currentTheme.primary} to-transparent opacity-50`}></div>
-        <div className="flex-1 overflow-hidden relative">{renderView()}</div>
-        <nav className={`md:hidden flex-none flex justify-around items-center p-2 bg-black/90 border-t border-gray-800 backdrop-blur-xl z-50 pb-safe`}>{NAV_ITEMS.map(item => (<button key={item.label} onClick={() => changeView(item.view)} className={`flex flex-col items-center gap-1 p-2 rounded transition-all ${state.view === item.view ? `text-${currentTheme.primary}` : 'text-gray-500'}`}>{item.icon}<span className="text-[9px] font-mono tracking-wider">{item.label}</span>{state.view === item.view && <div className={`w-1 h-1 rounded-full bg-${currentTheme.primary} mt-1`}></div>}</button>))}</nav>
+        {/* Main Content Area: Added top padding for mobile safe area */}
+        <div className="flex-1 overflow-hidden relative pt-[env(safe-area-inset-top)]">{renderView()}</div>
+        {/* Mobile Nav: Added bottom padding for mobile safe area */}
+        <nav className={`md:hidden flex-none flex justify-around items-center p-2 bg-black/90 border-t border-gray-800 backdrop-blur-xl z-50 pb-[env(safe-area-inset-bottom)]`}>{NAV_ITEMS.map(item => (<button key={item.label} onClick={() => changeView(item.view)} className={`flex flex-col items-center gap-1 p-2 rounded transition-all ${state.view === item.view ? `text-${currentTheme.primary}` : 'text-gray-500'}`}>{item.icon}<span className="text-[9px] font-mono tracking-wider">{item.label}</span>{state.view === item.view && <div className={`w-1 h-1 rounded-full bg-${currentTheme.primary} mt-1`}></div>}</button>))}</nav>
       </main>
     </div>
   );
