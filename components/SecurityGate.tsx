@@ -183,12 +183,6 @@ const SecurityGate: React.FC<SecurityGateProps> = ({ theme, masterProfile, onAut
           playSound('success');
           setTimeout(() => onAuthenticate('MASTER'), 1200);
       } 
-      // GUEST CREDENTIALS
-      else if (lower.includes('guest') || lower.includes('visitor') || lower.includes('demo')) {
-          setStatus('ACCESS_GRANTED');
-          playSound('click');
-          setTimeout(() => onAuthenticate('GUEST'), 1200);
-      }
       // INTRUDER
       else {
           setStatus('ACCESS_DENIED');
@@ -199,10 +193,6 @@ const SecurityGate: React.FC<SecurityGateProps> = ({ theme, masterProfile, onAut
               setAuthMethod('TEXT');
           }, 2000);
       }
-  };
-
-  const handleGuestAccess = () => {
-      validateCredentials('guest');
   };
 
   return (
@@ -219,6 +209,9 @@ const SecurityGate: React.FC<SecurityGateProps> = ({ theme, masterProfile, onAut
                 </h1>
                 <div className="text-[10px] font-mono text-cyan-800 tracking-widest mt-2 border-t border-cyan-900 pt-1">
                     SECURE BIOMETRIC GATEWAY // v3.3
+                </div>
+                <div className="text-[9px] font-bold text-red-500 tracking-widest mt-1 animate-pulse">
+                    RESTRICTED ACCESS // AUTHORIZED PERSONNEL ONLY
                 </div>
             </div>
 
@@ -298,12 +291,6 @@ const SecurityGate: React.FC<SecurityGateProps> = ({ theme, masterProfile, onAut
                         )}
                     </>
                 )}
-
-                <div className="flex justify-center pt-4">
-                    <button onClick={handleGuestAccess} className="text-[10px] text-gray-600 hover:text-gray-400 font-mono underline decoration-dotted">
-                        BYPASS LOGIN (GUEST MODE)
-                    </button>
-                </div>
             </div>
             
             <div className="absolute bottom-4 text-[9px] text-gray-800 font-mono flex items-center gap-2">
