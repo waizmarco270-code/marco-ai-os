@@ -21,7 +21,6 @@ import LicenseGate from './components/LicenseGate';
 import SetupWizard from './components/SetupWizard';
 import AdminKeyGen from './components/AdminKeyGen';
 import Hologram from './components/Hologram';
-import InstallPrompt from './components/InstallPrompt'; 
 
 const DEFAULT_PROFILE: MasterProfile = {
     isRegistered: false,
@@ -708,7 +707,6 @@ const App: React.FC = () => {
           <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center bg-black pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
             <ParticleBackground theme={currentTheme} />
             <LicenseGate theme={currentTheme} onSuccess={handleLicenseSuccess} />
-            <InstallPrompt theme={currentTheme} />
           </div>
       );
   }
@@ -723,7 +721,6 @@ const App: React.FC = () => {
                 licenseKey={state.masterProfile.licenseKey} // Pass stored key
                 onComplete={handleSetupComplete} 
             />
-            <InstallPrompt theme={currentTheme} />
           </div>
       );
   }
@@ -733,7 +730,6 @@ const App: React.FC = () => {
      return (
         <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col items-center justify-center bg-black pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>
             <SecurityGate theme={currentTheme} masterProfile={state.masterProfile} onAuthenticate={handleAuthentication} />
-            <InstallPrompt theme={currentTheme} />
         </div>
      );
   }
@@ -741,7 +737,6 @@ const App: React.FC = () => {
   // 4. Main App
   return (
     <div className={`relative h-[100dvh] w-full overflow-hidden flex flex-col md:flex-row font-sans perspective-1000 bg-black`}>
-      <InstallPrompt theme={currentTheme} />
       <ParticleBackground theme={currentTheme} />
       <SystemOverlay type={state.activeOverlay} theme={currentTheme} onClose={handleAlarmClose} />
       <nav className={`hidden md:flex flex-col w-20 bg-black/80 border-r border-gray-800 backdrop-blur-xl z-50 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]`}>

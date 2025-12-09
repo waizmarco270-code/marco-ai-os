@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'marco-os-v5.0-stable';
+const CACHE_NAME = 'marco-os-v5.1-stable';
 const URLS_TO_CACHE = [
   './',
   './index.html',
@@ -38,12 +38,10 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // NAVIGATION REQUESTS (HTML): Network First, Fallback to Cache
-  // This is critical for SPAs to avoid 404s on new deployments
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-           // If valid network response, cache it and return
            if (response && response.status === 200) {
                const responseToCache = response.clone();
                caches.open(CACHE_NAME).then((cache) => {
@@ -51,11 +49,9 @@ self.addEventListener('fetch', (event) => {
                });
                return response;
            }
-           // If 404 or other error from network, try cache
            return caches.match('./index.html') || caches.match('/');
         })
         .catch(() => {
-           // If offline, return cached index.html
            return caches.match('./index.html') || caches.match('/');
         })
     );
@@ -74,9 +70,7 @@ self.addEventListener('fetch', (event) => {
                 });
             }
             return networkResponse;
-        }).catch(() => {
-            // Network failed, nothing to do
-        });
+        }).catch(() => {});
 
         return cachedResponse || fetchPromise;
       })
