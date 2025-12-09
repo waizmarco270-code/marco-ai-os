@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'marco-os-v3.3';
+const CACHE_NAME = 'marco-os-v3.4-hotfix';
 const URLS_TO_CACHE = [
   './',
   './index.html',

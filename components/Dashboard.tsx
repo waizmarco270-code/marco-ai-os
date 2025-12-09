@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { ThemeColors, TodoItem, Alarm, FocusState } from '../types';
 import { getTodos, saveTodo, deleteTodo, saveAlarm, deleteAlarm, getAlarms, getScratchpad, saveScratchpad } from '../services/storageService';
@@ -67,7 +66,7 @@ const CornerBracket = ({ position, theme }: { position: 'TL' | 'TR' | 'BL' | 'BR
     return <div className={`absolute w-3 h-3 ${pClass} border-${theme.primary} opacity-70 pointer-events-none`}></div>;
 };
 
-const TechCard = ({ children, title, theme, className = '', heightClass = '' }: { children: React.ReactNode, title: string, theme: ThemeColors, className?: string, heightClass?: string }) => {
+const TechCard = ({ children, title, theme, className = '', heightClass = '' }: { children?: React.ReactNode, title: string, theme: ThemeColors, className?: string, heightClass?: string }) => {
     const primaryHex = getColor(theme.primary);
     
     return (

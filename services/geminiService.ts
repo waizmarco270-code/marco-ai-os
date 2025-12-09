@@ -7,9 +7,41 @@ import { getMemories, getMusicTracks } from "./storageService";
 
 let ai: GoogleGenAI | null = null;
 
+// --- ROBUST API KEY EXTRACTION ---
+// Fixes deployment issues where standard process.env.API_KEY is hidden by Vercel/Vite
+const getApiKey = (): string | undefined => {
+  // 1. Try standard process.env (Node/Webpack/CRA/Next.js)
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      if (process.env.API_KEY) return process.env.API_KEY;
+      if (process.env.REACT_APP_API_KEY) return process.env.REACT_APP_API_KEY; // CRA
+      if (process.env.NEXT_PUBLIC_API_KEY) return process.env.NEXT_PUBLIC_API_KEY; // Next.js
+      if (process.env.VITE_API_KEY) return process.env.VITE_API_KEY; // Vite (mapped)
+    }
+  } catch (e) {}
+
+  // 2. Try Vite's import.meta.env (Modern Bundlers)
+  try {
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
+      // @ts-ignore
+      if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+    }
+  } catch (e) {}
+
+  return undefined;
+};
+
 const initializeAI = () => {
-  if (!ai && process.env.API_KEY) {
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  if (ai) return; // Already initialized
+
+  const key = getApiKey();
+  if (key) {
+    ai = new GoogleGenAI({ apiKey: key });
+  } else {
+    console.warn("MARCO: API Key not found in any environment variable (Checked: API_KEY, VITE_API_KEY, REACT_APP_API_KEY).");
   }
 };
 
@@ -111,11 +143,16 @@ export const generateMarcoResponse = async (
   currentView: string,
   userRole: UserRole,
   masterName: string, 
-  personality: PersonalityMode, // NEW PARAM
+  personality: PersonalityMode, 
   imageBase64?: string
 ): Promise<string> => {
   initializeAI();
-  if (!ai) return "Error: API Key missing or client not initialized.";
+  
+  if (!ai) {
+      // Descriptive error to help debugging deployment
+      const keyStatus = getApiKey() ? "Client Init Failed" : "Key Not Found in Env";
+      return `SYSTEM ERROR: Neural Link Offline (${keyStatus}).\n\nTROUBLESHOOTING:\nPlease ensure you have set the environment variable 'VITE_API_KEY' in your Vercel project settings and redeployed.`;
+  }
 
   try {
     const userContext = generateUserProfileContext(learningProfile);
@@ -167,6 +204,6 @@ export const generateMarcoResponse = async (
     return response.text || "Systems offline. No response data.";
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "Error: Communication with neural network failed.";
+    return "Error: Communication with neural network failed. Check API Quota or Connection.";
   }
 };
